@@ -55,6 +55,18 @@ class AdminController {
     );
   });
 
+  getCompanyById = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { companyId } = req.params;
+
+    const company = await adminService.getCompanyById(companyId);
+
+    return ResponseUtil.success(
+      res,
+      { company },
+      "Company retrieved successfully",
+    );
+  });
+
   deactivateUser = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { userId } = req.params;
 

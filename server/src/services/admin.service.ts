@@ -146,6 +146,15 @@ class AdminService {
     };
   }
 
+  async getCompanyById(companyId: string): Promise<ICompany> {
+    const company = await Company.findById(companyId);
+    if (!company) {
+      throw new NotFoundError('Company not found');
+    }
+
+    return company;
+  }
+
   /**
    * Deactivate a user account (soft delete)
    */

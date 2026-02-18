@@ -43,5 +43,6 @@ router.delete("/users/:userId", adminController.deleteUser);
 
 // Company management
 router.get("/companies", adminController.getAllCompanies);
+router.get("/companies/:companyId", adminController.getCompanyById);
 
 export default router;
