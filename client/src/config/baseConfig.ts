@@ -25,9 +25,9 @@ export const API_CONFIG = {
 
 // ── Auth ─────────────────────────────────────────────────────────
 export const AUTH_CONFIG = {
-  TOKEN_KEY: "aura_auth_token",
-  REFRESH_TOKEN_KEY: "aura_refresh_token",
-  PERSIST_KEY: "aura_persist_root",
+  TOKEN_KEY: "auralign_auth_token",
+  REFRESH_TOKEN_KEY: "auralign_refresh_token",
+  PERSIST_KEY: "auralign_persist_root",
   SESSION_TIMEOUT_MS: Number(
     import.meta.env.VITE_SESSION_TIMEOUT_MS ?? 3_600_000,
   ), // 1hr
@@ -52,19 +52,19 @@ export const ROUTES = {
   VERIFY_EMAIL: "/auth/verify-email",
   // Dashboard
   DASHBOARD: "/dashboard",
-  ANALYTICS: "/dashboard/analytics",
+  ANALYTICS: "/analytics",
   // Users
-  USERS: "/dashboard/users",
-  COMPANIES: "/dashboard/admin/companies",
-  COMPANY_DETAIL: "/dashboard/admin/companies/:id",
-  USER_DETAIL: (id: string) => `/dashboard/users/${id}`,
+  USERS: "/users",
+  COMPANIES: "/admin/companies",
+  COMPANY_DETAIL: (id: string) => `/admin/companies/${id}`,
+  USER_DETAIL: (id: string) => `/users/${id}`,
   // Settings
-  SETTINGS: "/dashboard/settings",
-  SETTINGS_PROFILE: "/dashboard/settings/profile",
-  SETTINGS_SECURITY: "/dashboard/settings/security",
-  SETTINGS_BILLING: "/dashboard/settings/billing",
+  SETTINGS: "/settings",
+  SETTINGS_PROFILE: "/settings/profile",
+  SETTINGS_SECURITY: "/settings/security",
+  SETTINGS_BILLING: "/settings/billing",
   // Reports
-  REPORTS: "/dashboard/reports",
+  REPORTS: "/reports",
   // Errors
   NOT_FOUND: "/404",
   SERVER_ERROR: "/500",

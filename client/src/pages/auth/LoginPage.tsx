@@ -29,11 +29,26 @@ const LoginPage = () => {
   const onSubmit = async (values: LoginFormValues) => {
     try {
       const result = await login(values).unwrap();
-      dispatch(setCredentials({ user: result.data.user, tokens: result.data.tokens }));
+      
+      const tokens = {
+        accessToken: result.data.token, 
+        refreshToken: result.data.token, 
+        expiresIn: 604800,
+        tokenType: "Bearer" as const,
+      };
+
+      dispatch(
+        setCredentials({
+          user: result.data.user,
+          tokens: tokens,
+        })
+      );
+
       toast.success(TOAST_CONFIG.MESSAGES.LOGIN_SUCCESS);
       navigate(ROUTES.DASHBOARD, { replace: true });
-    } catch {
-      toast.error(TOAST_CONFIG.MESSAGES.LOGIN_ERROR);
+    } catch (err: any) {
+      console.error("Login error:", err);
+      toast.error(err?.data?.message || TOAST_CONFIG.MESSAGES.LOGIN_ERROR);
     }
   };
 

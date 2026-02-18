@@ -1,21 +1,83 @@
 import { Button } from "@/components/ui/button";
-import { Badge, Briefcase, Building2, Calendar, ChevronRight, CreditCard, Edit2, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Briefcase, Building2, Calendar, ChevronRight, CreditCard, Edit2, Trash2 } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetCompanyByIdQuery } from "@/redux/api/adminApi";
+import Modal from "./components/Model";
+import DeleteConfirmation from "@/components/modals/DeleteConfirmation";
+import { useState } from "react";
+import { ROUTES } from "@/config/baseConfig";
+import CompanyForm from "./components/CompanyForm";
+import { ICompany } from "@/types/api/companies";
 
-const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
-  if (!company) return null;
+const CompanyDetailPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { data: companyData, isLoading, error } = useGetCompanyByIdQuery(id || "", {
+    skip: !id,
+  });
+
+  const company = companyData?.data?.data.company;
+
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  const confirmDelete = () => {
+    setIsDeleteOpen(true);
+  };
+
+  const handleFormSubmit = (_data: Partial<ICompany>) => {
+    // TODO: Implement form submission
+  };
+
+  const handleBack = () => {
+    navigate(ROUTES.COMPANIES);
+  };
+
+  const handleEdit = () => {
+    setIsFormOpen(true);
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-500">Loading company details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !company) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Building2 className="text-red-600" size={32} />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Company Not Found</h2>
+          <p className="text-slate-500 mb-4">The company you're looking for doesn't exist or has been deleted.</p>
+          <Button onClick={handleBack}>Back to Companies</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in slide-in-from-right-8 fade-in duration-500">
       {/* Breadcrumb & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-sm text-slate-500">
-          <button onClick={onBack} className="hover:text-blue-600 transition-colors">Companies</button>
+          <button onClick={() => navigate(ROUTES.COMPANIES)} className="hover:text-blue-600 transition-colors">Companies</button>
           <ChevronRight size={14} />
           <span className="text-slate-900 font-medium">{company.name}</span>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="secondary" icon={Trash2} onClick={onDelete} className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-100">Delete</Button>
-          <Button icon={Edit2} onClick={onEdit}>Edit Profile</Button>
+          <Button variant="secondary" onClick={confirmDelete} className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-100"><Trash2 size={16} className="mr-2" />Delete</Button>
+          <Button onClick={() => setIsFormOpen(true)}><Edit2 size={16} className="mr-2" />Edit Profile</Button>
         </div>
       </div>
 
@@ -23,12 +85,13 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
       <div className="bg-white rounded-[2rem] p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="w-24 h-24 rounded-2xl bg-[#F3EFE7] flex items-center justify-center shrink-0 relative">
           <Building2 className="text-[#A89F8B]" size={32} />
-          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-[3px] border-white ${company.status === 'Active' ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-[3px] border-white ${company.isActive ? 'bg-emerald-500' : 'bg-slate-400'}`} />
         </div>
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-3xl font-bold text-slate-900">{company.name}</h1>
-            <Badge status={company.status} />
+            <Badge variant={company.isActive ? "secondary" : "destructive"}>{company.isActive ? "Active" : "Inactive"}</Badge>
+       
           </div>
           <div className="flex items-center gap-4 text-sm text-slate-500 flex-wrap">
             <span className="flex items-center gap-1.5">
@@ -40,7 +103,7 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
             </span>
             <span className="w-1 h-1 rounded-full bg-slate-300" />
             <span className="flex items-center gap-1.5">
-              <Calendar size={14} /> Client since {new Date(company.created_at).getFullYear()}
+              <Calendar size={14} /> Client since {new Date(company.createdAt).getFullYear()}
             </span>
           </div>
         </div>
@@ -53,7 +116,7 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
           <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-slate-200 shadow-sm relative group">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-900">General Information</h3>
-              <button onClick={onEdit} className="p-2 hover:bg-slate-50 rounded-full text-slate-400 hover:text-blue-600 transition-colors">
+              <button onClick={() => setIsFormOpen(true)} className="p-2 hover:bg-slate-50 rounded-full text-slate-400 hover:text-blue-600 transition-colors">
                 <Edit2 size={16} />
               </button>
             </div>
@@ -69,8 +132,8 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
               </div>
               <div className="sm:col-span-2">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Website</label>
-                <a href={company.website} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
-                  {company.website} <ChevronRight size={12} className="-rotate-45" />
+                <a href={"https://"+company} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline flex items-center gap-1">
+                  {`https://${company.name}.com`} <ChevronRight size={12} className="-rotate-45" />
                 </a>
               </div>
             </div>
@@ -78,7 +141,7 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
             <div>
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">About</label>
               <p className="text-slate-600 leading-relaxed text-sm">
-                {company.description}
+                {"about us"}
               </p>
             </div>
           </div>
@@ -97,10 +160,7 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
                   <div className="text-slate-900 font-medium">{company.city}, {company.state}</div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Zip Code</label>
-                    <div className="text-slate-900 font-medium">{company.zip}</div>
-                  </div>
+                  
                   <div>
                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Country</label>
                     <div className="text-slate-900 font-medium">{company.country}</div>
@@ -133,14 +193,14 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
             </div>
 
             <div className="space-y-4">
-              {company.accounts.length > 0 ? company.accounts.map((acc: any, i: number) => (
+              {company.accountDetails.length > 0 ? company.accountDetails.map((acc: any, i: number) => (
                 <div key={i} className="p-4 rounded-2xl border border-slate-100 hover:border-blue-200 bg-slate-50/50 hover:bg-blue-50/30 transition-all group">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm text-blue-600">
                         <Building2 size={16} />
                       </div>
-                      <span className="font-bold text-slate-900 text-sm">{acc.bank}</span>
+                      <span className="font-bold text-slate-900 text-sm">{acc.bankName}</span>
                     </div>
                     {acc.isPrimary && (
                       <span className="px-2 py-0.5 bg-slate-200 text-slate-600 text-[10px] uppercase font-bold rounded">Primary</span>
@@ -148,11 +208,11 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
                   </div>
                   <div className="space-y-1">
                     <div className="text-xs text-slate-400 uppercase font-medium">Account Number</div>
-                    <div className="text-slate-900 font-mono text-sm tracking-wider">{acc.number}</div>
+                    <div className="text-slate-900 font-mono text-sm tracking-wider">{acc.accountNumber}</div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-slate-200/50">
                      <div className="text-xs text-slate-400 uppercase font-medium">Account Holder</div>
-                     <div className="text-sm font-medium text-slate-700">{acc.holder}</div>
+                     <div className="text-sm font-medium text-slate-700">{acc.accountName}</div>
                   </div>
                 </div>
               )) : (
@@ -189,6 +249,32 @@ const CompanyDetailPage = ({ company, onBack, onEdit, onDelete }: any) => {
           </div>
         </div>
       </div>
+
+       {/* Create/Edit Modal */}
+            <Modal 
+              isOpen={isFormOpen} 
+              onClose={() => setIsFormOpen(false)} 
+              title={"Edit Company Profile"}
+            >
+              <CompanyForm 
+                defaultValues={company} 
+                onSubmit={handleFormSubmit}
+                onCancel={() => setIsFormOpen(false)}
+              />
+            </Modal>
+
+
+       {/* Delete Confirmation Modal */}
+            <Modal 
+              isOpen={isDeleteOpen} 
+              onClose={() => setIsDeleteOpen(false)} 
+              title="Confirm Deletion"
+            >
+              <DeleteConfirmation 
+                onConfirm={confirmDelete}
+                onCancel={() => setIsDeleteOpen(false)}
+              />
+            </Modal>
     </div>
   );
 };

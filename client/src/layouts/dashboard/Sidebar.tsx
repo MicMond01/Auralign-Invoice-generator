@@ -1,30 +1,39 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard, Users, FileBarChart, Settings,
-  ChevronLeft, ChevronRight, LogOut, Bell,
+  LayoutDashboard,
+  Users,
+  FileBarChart,
+  Settings,
+  LogOut,
   Building,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { toggleSidebarCollapse } from "@/redux/slices/uiSlice";
 import { logout } from "@/redux/slices/authSlice";
 import { selectSidebarCollapsed } from "@/redux/selectors/uiSelectors";
 import { selectCurrentUser } from "@/redux/selectors/authSelectors";
 import { ROUTES, APP_META, THEME_CONFIG } from "@/config/baseConfig";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const navItems = [
-  { label: "Dashboard",  to: ROUTES.DASHBOARD, icon: LayoutDashboard },
-  { label: "Companies",  to: ROUTES.COMPANIES, icon: Building },
-  { label: "Users",      to: ROUTES.USERS,     icon: Users },
-  { label: "Reports",    to: ROUTES.REPORTS,   icon: FileBarChart },
-  { label: "Settings",   to: ROUTES.SETTINGS,  icon: Settings },
+  { label: "Dashboard", to: ROUTES.DASHBOARD, icon: LayoutDashboard },
+  { label: "Companies", to: ROUTES.COMPANIES, icon: Building },
+  { label: "Users", to: ROUTES.USERS, icon: Users },
+  { label: "Reports", to: ROUTES.REPORTS, icon: FileBarChart },
+  { label: "Settings", to: ROUTES.SETTINGS, icon: Settings },
 ] as const;
 
 const Sidebar = () => {
-  const dispatch   = useAppDispatch();
-  const collapsed  = useAppSelector(selectSidebarCollapsed);
-  const user       = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch();
+  const collapsed = useAppSelector(selectSidebarCollapsed);
+  const user = useAppSelector(selectCurrentUser);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Effective state: if collapsed globally but hovered locally, treat as expanded for visual purposes
+  const isExpanded = !collapsed || isHovered;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -33,24 +42,26 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="fixed top-0 left-0 h-screen z-40 border-r border-slate-700/50 flex flex-col transition-all duration-300"
-      style={{ width: collapsed ? THEME_CONFIG.SIDEBAR_COLLAPSED_WIDTH : THEME_CONFIG.SIDEBAR_WIDTH }}
+      className={cn(
+        "fixed top-0 left-0 h-screen z-40 bg-slate-900 border-r border-slate-800 flex flex-col transition-all duration-300 ease-in-out hidden md:flex",
+        isExpanded ? "w-64" : "w-16"
+      )}
+      onMouseEnter={() => collapsed && setIsHovered(true)}
+      onMouseLeave={() => collapsed && setIsHovered(false)}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-700/50 min-h-[64px]">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-800 min-h-[64px] overflow-hidden">
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
           <span className="text-white text-xs font-bold">FT</span>
         </div>
-        {!collapsed && (
-          <span className="text-white font-semibold text-sm truncate">{APP_META.SHORT_NAME}</span>
-        )}
-        <button
-          onClick={() => dispatch(toggleSidebarCollapse())}
-          className="ml-auto text-slate-400 hover:text-white transition-colors"
-          aria-label="Toggle sidebar"
+        <span
+          className={cn(
+            "text-white font-semibold text-sm truncate transition-opacity duration-300",
+            isExpanded ? "opacity-100" : "opacity-0 w-0"
+          )}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
+          {APP_META.SHORT_NAME}
+        </span>
       </div>
 
       {/* Nav */}
@@ -61,42 +72,64 @@ const Sidebar = () => {
             to={to}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative group",
                 isActive
                   ? "bg-blue-600 text-white"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
               )
             }
           >
-            <Icon size={18} className="shrink-0" />
-            {!collapsed && <span className="truncate">{label}</span>}
+            <Icon size={20} className="shrink-0" />
+            <span
+              className={cn(
+                "truncate transition-all duration-300",
+                isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
+              )}
+            >
+              {label}
+            </span>
+            
+            {/* Tooltip-like label for collapsed state if not hovering sidebar (optional, but since we expand on hover, we might not need it) 
+                However, if user prefers just icons, the expansion handles it. 
+            */}
           </NavLink>
         ))}
       </nav>
 
       {/* User footer */}
-      <div className="border-t border-slate-700/50 p-3">
-        {!collapsed && user && (
-          <div className="flex items-center gap-2 mb-2 px-2">
-            <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-              {user.firstName?.[0]?.toUpperCase()}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-white text-xs font-medium truncate">{user.firstName} {user.lastName}</p>
+      <div className="border-t border-slate-800 p-3 overflow-hidden">
+        {user && (
+          <div className={cn("flex items-center gap-3 mb-2 px-1 transition-all duration-300", isExpanded ? "justify-start" : "justify-center")}>
+             <Avatar className="h-8 w-8">
+                <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.firstName}`} />
+                <AvatarFallback className="bg-blue-600 text-white text-xs">
+                  {user.firstName?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            
+            <div className={cn("overflow-hidden transition-all duration-300", isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0")}>
+              <p className="text-white text-xs font-medium truncate">
+                {user.firstName} {user.lastName}
+              </p>
               <p className="text-slate-500 text-xs truncate">{user.role}</p>
             </div>
           </div>
         )}
-        <button
+        
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all",
-            collapsed && "justify-center"
+            "w-full flex items-center gap-3 text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all justify-start",
+            !isExpanded && "justify-center px-0"
           )}
         >
-          <LogOut size={16} className="shrink-0" />
-          {!collapsed && <span>Sign Out</span>}
-        </button>
+          <LogOut size={18} className="shrink-0" />
+          <span className={cn("truncate transition-all duration-300", isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0")}>
+            Sign Out
+          </span>
+        </Button>
       </div>
     </aside>
   );

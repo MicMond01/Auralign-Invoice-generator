@@ -9,12 +9,18 @@ import type {
 } from "@/types/auth";
 import type { ApiResponse } from "@/types/common";
 
+interface BackendLoginResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    token: string;
+  };
+}
+
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    login: build.mutation<
-      ApiResponse<{ user: User; tokens: AuthTokens }>,
-      LoginRequest
-    >({
+    login: build.mutation<BackendLoginResponse, LoginRequest>({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
       invalidatesTags: ["Auth"],
     }),

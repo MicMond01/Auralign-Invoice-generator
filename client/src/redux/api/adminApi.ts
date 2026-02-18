@@ -1,4 +1,4 @@
-import { ICompanies } from "@/types/api/companies";
+import { ICompanies, ICompanyResponse } from "@/types/api/companies";
 import { baseApi } from "./baseApi";
 import type { ApiResponse } from "@/types/common";
 
@@ -10,8 +10,14 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Admin"],
     }),
+    getCompanyById: build.query<ApiResponse<ICompanyResponse>, string>({
+      query: (id) => ({
+        url: `/admin/companies/${id}`,
+      }),
+      providesTags: ["Admin"],
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetCompaniesQuery } = adminApi;
+export const { useGetCompaniesQuery, useGetCompanyByIdQuery } = adminApi;

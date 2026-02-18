@@ -8,7 +8,9 @@ const baseQuery = fetchBaseQuery({
   baseUrl: API_CONFIG.FULL_URL,
   timeout: API_CONFIG.TIMEOUT_MS,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.tokens?.accessToken;
+    const state = getState() as RootState;
+    const token = state.auth.tokens?.accessToken;
+
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -71,6 +73,14 @@ const baseQueryWithReauth: typeof baseQuery = async (
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Auth", "User", "Dashboard", "Report", "Settings", "Admin", "Company"],
+  tagTypes: [
+    "Auth",
+    "User",
+    "Dashboard",
+    "Report",
+    "Settings",
+    "Admin",
+    "Company",
+  ],
   endpoints: () => ({}),
 });

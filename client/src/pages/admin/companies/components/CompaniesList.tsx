@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/config/baseConfig";
 
 
-const CompaniesList = ({ companies, onViewDetails, onCreateNew }: any) => {
+const CompaniesList = ({ companies, onViewDetails, onCreateNew, isLoading }: any) => {
+  
     const navigate = useNavigate()
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -41,6 +42,12 @@ const CompaniesList = ({ companies, onViewDetails, onCreateNew }: any) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
+                             {isLoading ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 px-6 text-center text-slate-400">Loading companies...</td>
+                  </tr>
+                ) : (
+                  <>
               {companies.map((company: ICompany) => (
                 <tr 
                   key={company.id} 
@@ -65,15 +72,18 @@ const CompaniesList = ({ companies, onViewDetails, onCreateNew }: any) => {
                   <td className="py-4 px-6 text-sm text-slate-600 hidden md:table-cell">{company.email}</td>
                   <td className="py-4 px-6 text-sm text-slate-600 hidden lg:table-cell">{company.country}</td>
                   <td className="py-4 px-6">
-                    <Badge variant={company.isActive ? "secondary" : "destructive"} />
+                    <Badge variant={company.isActive ? "secondary" : "destructive"}>{company.isActive ? "Active" : "Inactive"}</Badge>
                   </td>
                   <td className="py-4 px-6 text-right">
-                    {/* <button  onClick={() => navigate(ROUTES.COMPANY_DETAIL.replace(':id', company.id))} className="p-2 hover:bg-white rounded-full text-slate-400 hover:text-blue-600 hover:shadow-sm transition-all group-hover:opacity-100 md:opacity-0">
+                    <button  onClick={() => navigate(ROUTES.COMPANY_DETAIL(company.id))} className="p-2 hover:bg-white rounded-full text-slate-400 hover:text-blue-600 hover:shadow-sm transition-all group-hover:opacity-100 md:opacity-0">
                       <Edit2 size={16} />
-                    </button> */}
+                    </button>
                   </td>
                 </tr>
               ))}
+               </>
+               
+              )}
             </tbody>
           </table>
         </div>
