@@ -2,7 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import path from "path";
 import companyController from "../controllers/company.controller";
-import { authenticate } from "../middleware/auth.middleware";
+import { authenticate, authorize } from "../middleware/auth.middleware";
 import { validate } from "../middleware/validation.middleware";
 import {
   createCompanyValidation,
@@ -49,9 +49,10 @@ router.post(
   "/",
   createLimiter,
   validate(createCompanyValidation),
+  authorize("admin"),
   companyController.create,
 );
-router.get("/", companyController.getAll);
+router.get("/", authorize("admin"), companyController.getAll);
 router.get("/:id", validate(getCompanyValidation), companyController.getById);
 router.put("/:id", validate(updateCompanyValidation), companyController.update);
 router.delete(
