@@ -13,6 +13,10 @@ const LoginPage        = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage     = lazy(() => import("@/pages/auth/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("@/pages/auth/ForgotPasswordPage"));
 
+// Admin
+const Companies    = lazy(() => import("@/pages/admin/companies/Companies"));
+
+
 const DashboardPage    = lazy(() => import("@/pages/dashboard/DashboardPage"));
 const UsersPage        = lazy(() => import("@/pages/users/UsersPage"));
 const ReportsPage      = lazy(() => import("@/pages/reports/ReportsPage"));
@@ -52,6 +56,8 @@ const router = createBrowserRouter([
             element: <ProtectedRoute requiredRole={ROLES.ADMIN} />,
             children: [
               { path: ROUTES.USERS, element: <UsersPage /> },
+              { path: ROUTES.COMPANIES, element: <Companies /> },
+              { path: ROUTES.COMPANIES, element: <Companies /> },
             ],
           },
         ],

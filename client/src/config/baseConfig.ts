@@ -1,5 +1,5 @@
 // ================================================================
-//  FAJLINK TECHNOLOGY — Base Application Configuration
+//  aura TECHNOLOGY — Base Application Configuration
 //  Single source of truth for all env-driven and static config
 // ================================================================
 
@@ -25,9 +25,9 @@ export const API_CONFIG = {
 
 // ── Auth ─────────────────────────────────────────────────────────
 export const AUTH_CONFIG = {
-  TOKEN_KEY: "fajlink_auth_token",
-  REFRESH_TOKEN_KEY: "fajlink_refresh_token",
-  PERSIST_KEY: "fajlink_persist_root",
+  TOKEN_KEY: "aura_auth_token",
+  REFRESH_TOKEN_KEY: "aura_refresh_token",
+  PERSIST_KEY: "aura_persist_root",
   SESSION_TIMEOUT_MS: Number(
     import.meta.env.VITE_SESSION_TIMEOUT_MS ?? 3_600_000,
   ), // 1hr
@@ -55,6 +55,8 @@ export const ROUTES = {
   ANALYTICS: "/dashboard/analytics",
   // Users
   USERS: "/dashboard/users",
+  COMPANIES: "/dashboard/admin/companies",
+  COMPANY_DETAIL: "/dashboard/admin/companies/:id",
   USER_DETAIL: (id: string) => `/dashboard/users/${id}`,
   // Settings
   SETTINGS: "/dashboard/settings",
@@ -129,7 +131,7 @@ export const UPLOAD_CONFIG = {
 // ── Theming ──────────────────────────────────────────────────────
 export const THEME_CONFIG = {
   DEFAULT_THEME: "light" as "light" | "dark" | "system",
-  STORAGE_KEY: "fajlink_theme",
+  STORAGE_KEY: "aura_theme",
   PRIMARY_COLOR: "#2563eb",
   SIDEBAR_WIDTH: "256px",
   SIDEBAR_COLLAPSED_WIDTH: "72px",
@@ -163,13 +165,13 @@ export const ANALYTICS_CONFIG = {
 
 // ── App Meta ─────────────────────────────────────────────────────
 export const APP_META = {
-  NAME: "Fajlink Technology",
-  SHORT_NAME: "Fajlink",
+  NAME: "auralign Technology",
+  SHORT_NAME: "aura",
   DESCRIPTION: "Enterprise SaaS Platform",
   VERSION: import.meta.env.VITE_APP_VERSION ?? "1.0.0",
-  SUPPORT_EMAIL: "support@fajlink.com",
-  DOCS_URL: "https://docs.fajlink.com",
-  GITHUB_URL: "https://github.com/fajlink",
+  SUPPORT_EMAIL: "support@auralign.com",
+  DOCS_URL: "https://docs.auralign.com",
+  GITHUB_URL: "https://github.com/auralign",
 } as const;
 
 // ── Permissions / Roles ──────────────────────────────────────────

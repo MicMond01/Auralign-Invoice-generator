@@ -18,21 +18,26 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth: typeof baseQuery = async (args, api, extraOptions) => {
+const baseQueryWithReauth: typeof baseQuery = async (
+  args,
+  api,
+  extraOptions,
+) => {
   let result = await baseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
     // Try to refresh
-    const refreshToken = (api.getState() as RootState).auth.tokens?.refreshToken;
+    const refreshToken = (api.getState() as RootState).auth.tokens
+      ?.refreshToken;
     if (refreshToken) {
       const refreshResult = await baseQuery(
         {
-          url:    "/auth/refresh",
+          url: "/auth/refresh",
           method: "POST",
-          body:   { refreshToken },
+          body: { refreshToken },
         },
         api,
-        extraOptions
+        extraOptions,
       );
 
       if (refreshResult.data) {
@@ -52,7 +57,11 @@ const baseQueryWithReauth: typeof baseQuery = async (args, api, extraOptions) =>
     toast.error(TOAST_CONFIG.MESSAGES.FORBIDDEN);
   }
 
-  if (result.error && typeof result.error.status === "number" && result.error.status >= 500) {
+  if (
+    result.error &&
+    typeof result.error.status === "number" &&
+    result.error.status >= 500
+  ) {
     toast.error(TOAST_CONFIG.MESSAGES.NETWORK_ERROR);
   }
 
@@ -61,7 +70,7 @@ const baseQueryWithReauth: typeof baseQuery = async (args, api, extraOptions) =>
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery:   baseQueryWithReauth,
-  tagTypes:    ["Auth", "User", "Dashboard", "Report", "Settings"],
-  endpoints:   () => ({}),
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ["Auth", "User", "Dashboard", "Report", "Settings", "Admin", "Company"],
+  endpoints: () => ({}),
 });

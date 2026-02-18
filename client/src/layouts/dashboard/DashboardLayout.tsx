@@ -4,12 +4,13 @@ import Topbar from "./Topbar";
 import { useAppSelector } from "@/store/hooks";
 import { selectSidebarCollapsed } from "@/redux/selectors/uiSelectors";
 import { THEME_CONFIG } from "@/config/baseConfig";
+import Breadcrumbs from "@/components/navigation/Breadcrumbs";
 
 const DashboardLayout = () => {
   const collapsed = useAppSelector(selectSidebarCollapsed);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
+    <div className="flex h-screen  overflow-hidden">
       <Sidebar />
       <div
         className="flex flex-col flex-1 overflow-hidden transition-all duration-300"
@@ -17,10 +18,13 @@ const DashboardLayout = () => {
       >
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
+                    <Breadcrumbs />
+
           <Outlet />
         </main>
       </div>
     </div>
+
   );
 };
 

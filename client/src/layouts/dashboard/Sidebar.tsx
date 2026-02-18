@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, Users, FileBarChart, Settings,
   ChevronLeft, ChevronRight, LogOut, Bell,
+  Building,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toggleSidebarCollapse } from "@/redux/slices/uiSlice";
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard",  to: ROUTES.DASHBOARD, icon: LayoutDashboard },
+  { label: "Companies",  to: ROUTES.COMPANIES, icon: Building },
   { label: "Users",      to: ROUTES.USERS,     icon: Users },
   { label: "Reports",    to: ROUTES.REPORTS,   icon: FileBarChart },
   { label: "Settings",   to: ROUTES.SETTINGS,  icon: Settings },
@@ -31,7 +33,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className="fixed top-0 left-0 h-screen z-40 bg-slate-900 border-r border-slate-700/50 flex flex-col transition-all duration-300"
+      className="fixed top-0 left-0 h-screen z-40 border-r border-slate-700/50 flex flex-col transition-all duration-300"
       style={{ width: collapsed ? THEME_CONFIG.SIDEBAR_COLLAPSED_WIDTH : THEME_CONFIG.SIDEBAR_WIDTH }}
     >
       {/* Logo */}

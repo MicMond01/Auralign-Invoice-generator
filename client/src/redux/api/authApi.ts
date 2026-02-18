@@ -11,7 +11,10 @@ import type { ApiResponse } from "@/types/common";
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    login: build.mutation<ApiResponse<{ user: User; tokens: AuthTokens }>, LoginRequest>({
+    login: build.mutation<
+      ApiResponse<{ user: User; tokens: AuthTokens }>,
+      LoginRequest
+    >({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
       invalidatesTags: ["Auth"],
     }),
@@ -32,7 +35,10 @@ export const authApi = baseApi.injectEndpoints({
       query: () => "/auth/me",
       providesTags: ["Auth"],
     }),
-    refreshToken: build.mutation<ApiResponse<AuthTokens>, { refreshToken: string }>({
+    refreshToken: build.mutation<
+      ApiResponse<AuthTokens>,
+      { refreshToken: string }
+    >({
       query: (body) => ({ url: "/auth/refresh", method: "POST", body }),
     }),
   }),

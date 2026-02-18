@@ -11,13 +11,13 @@ const Topbar = () => {
   const user         = useAppSelector(selectCurrentUser);
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center px-6 gap-4 shrink-0">
+    <header className="h-16 border-b border-slate-200  flex items-center px-6 gap-4 shrink-0">
       {/* Breadcrumbs */}
       <nav className="flex items-center text-sm text-slate-500 gap-1 flex-1">
         {breadcrumbs.map((crumb, i) => (
           <span key={i} className="flex items-center gap-1">
-            {i > 0 && <span className="text-slate-300">/</span>}
-            <span className={i === breadcrumbs.length - 1 ? "text-slate-900 dark:text-white font-medium" : ""}>
+            {i > 0 && <span className="">/</span>}
+            <span className={i === breadcrumbs.length - 1 ? " font-medium" : ""}>
               {crumb.label}
             </span>
           </span>
@@ -30,7 +30,7 @@ const Topbar = () => {
         <input
           type="text"
           placeholder="Search…"
-          className="pl-9 pr-4 py-1.5 text-sm bg-slate-100 dark:bg-slate-700 rounded-lg border-0 outline-none focus:ring-2 focus:ring-blue-500 w-48"
+          className="pl-9 pr-4 py-1.5 text-sm  rounded-lg border-0 outline-none focus:ring-2 focus:ring-blue-500 w-48"
         />
       </div>
 
