@@ -12,15 +12,15 @@ export const usersApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getUsers: build.query<ApiResponse<User[]>, PaginationParams>({
       query: (params) => ({
-        url: "/users",
+        url: "/admin/users",
         params: params as Record<string, string | number | boolean | undefined>,
       }),
       providesTags: (result) =>
         result?.data
           ? [
-              ...result.data.map(({ id }) => ({ type: "User" as const, id })),
-              "User",
-            ]
+            ...result.data.map(({ id }) => ({ type: "User" as const, id })),
+            "User",
+          ]
           : ["User"],
     }),
     getUserById: build.query<ApiResponse<User>, string>({

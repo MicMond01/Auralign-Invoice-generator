@@ -1,24 +1,40 @@
 import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
-interface Column {
-  key:   string;
+// ── Types ─────────────────────────────────────────────────────────
+interface Column<T = Record<string, unknown>> {
+  key: string;
   label: string;
+  render?: (row: T) => React.ReactNode;
 }
 
-interface DataTableProps<T extends Record<string, unknown> & { id: string }> {
-  columns:       Column[];
-  data:          T[];
-  isLoading:     boolean;
-  onDelete?:     (id: string) => void;
-  totalPages?:   number;
-  currentPage?:  number;
+interface DataTableProps<T extends Record<string, unknown>> {
+  columns: Column<T>[];
+  data: T[];
+  isLoading: boolean;
+  rowKey?: (row: T) => string;
+  onDelete?: (id: string) => void;
+  totalPages?: number;
+  currentPage?: number;
   onPageChange?: (page: number) => void;
 }
 
-function DataTable<T extends Record<string, unknown> & { id: string }>({
-  columns, data, isLoading, onDelete, totalPages = 1, currentPage = 1, onPageChange,
+import React from "react";
+
+function DataTable<T extends Record<string, unknown>>({
+  columns,
+  data,
+  isLoading,
+  rowKey,
+  onDelete,
+  totalPages = 1,
+  currentPage = 1,
+  onPageChange,
 }: DataTableProps<T>) {
+  const getRowKey = (row: T): string => {
+    if (rowKey) return rowKey(row);
+    return (String(row._id ?? row.id ?? Math.random()));
+  };
 
   const confirmDelete = (id: string) => {
     toast("Are you sure?", {
@@ -29,11 +45,12 @@ function DataTable<T extends Record<string, unknown> & { id: string }>({
     });
   };
 
-  if (isLoading) return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+      </div>
+    );
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -42,7 +59,10 @@ function DataTable<T extends Record<string, unknown> & { id: string }>({
           <thead className="bg-slate-50 dark:bg-slate-700/50">
             <tr>
               {columns.map((col) => (
-                <th key={col.key} className="px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider">
+                <th
+                  key={col.key}
+                  className="px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider"
+                >
                   {col.label}
                 </th>
               ))}
@@ -51,19 +71,38 @@ function DataTable<T extends Record<string, unknown> & { id: string }>({
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
             {data.length === 0 ? (
-              <tr><td colSpan={columns.length + 1} className="px-4 py-8 text-center text-slate-400">No records found.</td></tr>
+              <tr>
+                <td
+                  colSpan={columns.length + (onDelete ? 1 : 0)}
+                  className="px-4 py-10 text-center text-slate-400"
+                >
+                  No records found.
+                </td>
+              </tr>
             ) : (
               data.map((row) => (
-                <tr key={row.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                <tr
+                  key={getRowKey(row)}
+                  className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
+                >
                   {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3.5 text-slate-700 dark:text-slate-300">
-                      {String(row[col.key] ?? "—")}
+                    <td
+                      key={col.key}
+                      className="px-4 py-3.5 text-slate-700 dark:text-slate-300"
+                    >
+                      {col.render
+                        ? col.render(row)
+                        : String(row[col.key] ?? "—")}
                     </td>
                   ))}
                   {onDelete && (
                     <td className="px-4 py-3.5">
-                      <button onClick={() => confirmDelete(row.id)}
-                        className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded">
+                      <button
+                        onClick={() =>
+                          confirmDelete(String(row._id ?? row.id ?? ""))
+                        }
+                        className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded"
+                      >
                         <Trash2 size={15} />
                       </button>
                     </td>
@@ -77,14 +116,22 @@ function DataTable<T extends Record<string, unknown> & { id: string }>({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100 dark:border-slate-700">
-          <span className="text-xs text-slate-500">Page {currentPage} of {totalPages}</span>
+          <span className="text-xs text-slate-500">
+            Page {currentPage} of {totalPages}
+          </span>
           <div className="flex gap-1">
-            <button onClick={() => onPageChange?.(currentPage - 1)} disabled={currentPage <= 1}
-              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600">
+            <button
+              onClick={() => onPageChange?.(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600"
+            >
               <ChevronLeft size={15} />
             </button>
-            <button onClick={() => onPageChange?.(currentPage + 1)} disabled={currentPage >= totalPages}
-              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600">
+            <button
+              onClick={() => onPageChange?.(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              className="p-1.5 rounded-lg hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-600"
+            >
               <ChevronRight size={15} />
             </button>
           </div>

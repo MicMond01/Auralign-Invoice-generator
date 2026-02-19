@@ -13,7 +13,7 @@ export const ENV = {
 
 // ── API ──────────────────────────────────────────────────────────
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000/api",
+  BASE_URL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api",
   VERSION: import.meta.env.VITE_API_VERSION ?? "v1",
   TIMEOUT_MS: Number(import.meta.env.VITE_API_TIMEOUT_MS ?? 30_000),
   RETRY_ATTEMPTS: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS ?? 3),
