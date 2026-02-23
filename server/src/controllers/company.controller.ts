@@ -106,6 +106,20 @@ class CompanyController {
       "Signature uploaded successfully",
     );
   });
+
+  updateAccountDetails = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.userId;
+    const { id } = req.params;
+    const updates = req.body;
+
+    const company = await companyService.updateAccountDetails(id, userId, updates);
+
+    return ResponseUtil.success(
+      res,
+      { company },
+      "Account details updated successfully",
+    );
+  });
 }
 
 export default new CompanyController();

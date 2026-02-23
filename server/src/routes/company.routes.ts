@@ -52,7 +52,7 @@ router.post(
   authorize("admin"),
   companyController.create,
 );
-router.get("/", authorize("admin"), companyController.getAll);
+router.get("/", companyController.getAll);
 router.get("/:id", validate(getCompanyValidation), companyController.getById);
 router.put("/:id", validate(updateCompanyValidation), companyController.update);
 router.delete(
@@ -68,5 +68,7 @@ router.post(
   upload.single("signature"),
   companyController.uploadSignature,
 );
+
+router.put("/:id/account-details", companyController.updateAccountDetails);
 
 export default router;

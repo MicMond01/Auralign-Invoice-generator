@@ -78,6 +78,7 @@ const config: Config = {
   cors: {
     allowedOrigins: process.env.ALLOWED_ORIGINS?.split(",") || [
       "http://localhost:3000",
+      "http://localhost:5173",
     ],
   },
 

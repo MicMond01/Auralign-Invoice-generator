@@ -101,6 +101,17 @@ class CompanyService {
     await company.save();
     return company;
   }
+
+  async updateAccountDetails(
+    companyId: string,
+    userId: string,
+    updates: Partial<ICompany>
+  ): Promise<ICompany> {
+    const company = await this.getById(companyId, userId);
+    Object.assign(company, updates);
+    await company.save();
+    return company;
+  }
 }
 
 export default new CompanyService();
