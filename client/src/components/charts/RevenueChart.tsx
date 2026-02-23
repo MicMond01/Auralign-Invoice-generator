@@ -25,7 +25,7 @@ const RevenueChart = () => (
       <YAxis tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false}
         tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} />
       <Tooltip
-        formatter={(v: number) => [`$${v.toLocaleString()}`, "Revenue"]}
+        formatter={(v: any) => [`$${Number(v || 0).toLocaleString()}`, "Revenue"]}
         contentStyle={{ borderRadius: "8px", border: "1px solid #e2e8f0", fontSize: 12 }}
       />
       <Area type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={2} fill="url(#revGradient)" />

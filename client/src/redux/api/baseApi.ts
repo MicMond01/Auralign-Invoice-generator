@@ -14,8 +14,8 @@ const baseQuery = fetchBaseQuery({
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
-    headers.set("Content-Type", "application/json");
     headers.set("Accept", "application/json");
+    // Don't force Content-Type — let the browser set it for FormData (file uploads)
     return headers;
   },
 });

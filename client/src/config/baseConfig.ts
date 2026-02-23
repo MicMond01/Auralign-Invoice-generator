@@ -55,8 +55,11 @@ export const ROUTES = {
   ANALYTICS: "/analytics",
   // Users
   USERS: "/users",
-  COMPANIES: "/admin/companies",
-  COMPANY_DETAIL: (id: string) => `/admin/companies/${id}`,
+  COMPANIES: "/dashboard/admin/companies",
+  // Invoices
+  INVOICES: "/dashboard/invoices",
+  CREATE_INVOICE: "/dashboard/invoices/create",
+  COMPANY_DETAIL: (id: string) => `/dashboard/admin/companies/${id}`,
   USER_DETAIL: (id: string) => `/users/${id}`,
   // Settings
   SETTINGS: "/settings",

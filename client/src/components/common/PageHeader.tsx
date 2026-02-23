@@ -1,16 +1,22 @@
+import type { ReactNode } from "react";
+
 interface PageHeaderProps {
-  title:       string;
-  description?: string;
-  actions?:    React.ReactNode;
+  title: string;
+  subtitle?: string;
+  action?: ReactNode;
 }
 
-const PageHeader = ({ title, description, actions }: PageHeaderProps) => (
-  <div className="flex items-start justify-between gap-4">
+const PageHeader = ({ title, subtitle, action }: PageHeaderProps) => (
+  <div className="flex items-center justify-between">
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-      {description && <p className="text-slate-500 text-sm mt-1">{description}</p>}
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        {title}
+      </h1>
+      {subtitle && (
+        <p className="text-slate-500 text-sm mt-1">{subtitle}</p>
+      )}
     </div>
-    {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
+    {action}
   </div>
 );
 

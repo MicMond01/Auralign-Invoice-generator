@@ -17,7 +17,7 @@ const CompanyDetailPage = () => {
     skip: !id,
   });
 
-  const company = companyData?.data?.data.company;
+  const company = (companyData?.data as any)?.company || companyData?.data?.data?.company;
 
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);

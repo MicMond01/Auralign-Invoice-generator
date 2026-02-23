@@ -5,9 +5,11 @@ import DeleteConfirmation from "@/components/modals/DeleteConfirmation";
 import CompaniesList from "./components/CompaniesList";
 import { ICompany } from "@/types/api/companies";
 import { useGetCompaniesQuery } from "@/redux/api/adminApi";
+import { useCreateCompanyMutation, useUpdateCompanyMutation, type CreateCompanyPayload } from "@/redux/api/companiesApi";
 import { useAppSelector } from "@/store/hooks";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@/config/baseConfig";
+import { ROUTES, TOAST_CONFIG } from "@/config/baseConfig";
+import { toast } from "sonner";
 
 const Companies = () => {
   const authState = useAppSelector((state) => state.auth);
@@ -22,15 +24,30 @@ const Companies = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
 
-  const navigate = useNavigate()
+  const [createCompany, { isLoading: isCreating }] = useCreateCompanyMutation();
+  const [updateCompany, { isLoading: isUpdating }] = useUpdateCompanyMutation();
+
+  const isSaving = isCreating || isUpdating;
+  const navigate = useNavigate();
 
   const handleCreateNew = () => {
     setFormMode("create");
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (_data: Partial<ICompany>) => {
-    // TODO: Implement form submission
+  const handleFormSubmit = async (data: any) => {
+    try {
+      if (formMode === "create") {
+        await createCompany(data as CreateCompanyPayload).unwrap();
+        toast.success("Company created successfully");
+      } else if (selectedCompany?.id) {
+        await updateCompany({ id: selectedCompany.id, data }).unwrap();
+        toast.success("Company updated successfully");
+      }
+      setIsFormOpen(false);
+    } catch (err: any) {
+      toast.error(err?.data?.message || TOAST_CONFIG.MESSAGES.SAVE_ERROR);
+    }
   };
 
   const confirmDelete = () => {
@@ -83,6 +100,7 @@ const Companies = () => {
           defaultValues={formMode === 'edit' ? selectedCompany : undefined} 
           onSubmit={handleFormSubmit}
           onCancel={() => setIsFormOpen(false)}
+          isSaving={isSaving}
         />
       </Modal>
 
